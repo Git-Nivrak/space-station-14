@@ -1,6 +1,13 @@
-#nullable enable
+﻿#nullable enable
 using Content.Shared.GameObjects.Components.Projectiles;
+using Content.Shared.Input;
+using Robust.Client.Interfaces.Input;
 using Robust.Shared.GameObjects;
+using Robust.Shared.Input.Binding;
+using Robust.Shared.Interfaces.GameObjects;
+using Robust.Shared.IoC;
+using Robust.Shared.Serialization;
+using System;
 
 namespace Content.Client.GameObjects.Components.Projectiles
 {
@@ -18,5 +25,6 @@ namespace Content.Client.GameObjects.Components.Projectiles
                 IgnoreShooter = compState.IgnoreShooter;
             }
         }
+
     }
 }

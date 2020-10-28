@@ -36,10 +36,10 @@ namespace Content.Server.GameObjects.Components.Mobs.State
 
             EntitySystem.Get<StandingStateSystem>().Down(entity);
 
-            if (entity.TryGetComponent(out IPhysicsComponent physics))
+            /*if (entity.TryGetComponent(out IPhysicsComponent physics))
             {
                 physics.CanCollide = false;
-            }
+            }*/
         }
 
         public override void ExitState(IEntity entity)

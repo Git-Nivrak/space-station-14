@@ -41,5 +41,6 @@ namespace Content.Shared.Input
         public static readonly BoundKeyFunction Arcade1 = "Arcade1";
         public static readonly BoundKeyFunction Arcade2 = "Arcade2";
         public static readonly BoundKeyFunction Arcade3 = "Arcade3";
+        public static readonly BoundKeyFunction TogglePrecision = "TogglePrecision";
     }
 }

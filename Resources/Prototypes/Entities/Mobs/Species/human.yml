@@ -172,6 +172,7 @@
       fireStackAlternateState: 3
     - type: CreamPiedVisualizer
   - type: CombatMode
+  - type: PrecisionMode
   - type: Climbing
   - type: Cuffable
   - type: Teleportable

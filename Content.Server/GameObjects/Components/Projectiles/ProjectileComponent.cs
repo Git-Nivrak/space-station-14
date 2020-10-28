@@ -1,13 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Content.Server.GameObjects.Components.Mobs;
 using Content.Shared.Damage;
 using Content.Shared.GameObjects.Components.Damage;
 using Content.Shared.GameObjects.Components.Projectiles;
+using Content.Shared.Physics;
 using Robust.Server.GameObjects.EntitySystems;
+using Robust.Server.GameObjects.EntitySystems.TileLookup;
 using Robust.Shared.GameObjects;
 using Robust.Shared.GameObjects.Components;
 using Robust.Shared.GameObjects.Systems;
 using Robust.Shared.Interfaces.GameObjects;
+using Robust.Shared.Interfaces.Network;
+using Robust.Shared.IoC;
+using Robust.Shared.Maths;
+using Robust.Shared.Players;
 using Robust.Shared.Serialization;
 using Robust.Shared.ViewVariables;
 
@@ -38,6 +46,7 @@ namespace Content.Server.GameObjects.Components.Projectiles
 
         private bool _damagedEntity;
 
+
         public override void ExposeData(ObjectSerializer serializer)
         {
             base.ExposeData(serializer);
@@ -49,6 +58,8 @@ namespace Content.Server.GameObjects.Components.Projectiles
         }
 
         public float TimeLeft { get; set; } = 10;
+
+        public Vector2 targetPos;
 
         /// <summary>
         /// Function that makes the collision of this object ignore a specific entity so we don't collide with ourselves
@@ -71,15 +82,40 @@ namespace Content.Server.GameObjects.Components.Projectiles
                 return;
             }
 
-            // This is so entities that shouldn't get a collision are ignored.
-            if (entity.TryGetComponent(out IPhysicsComponent otherPhysics) && otherPhysics.Hard == false)
+            Owner.EntityManager.GetEntity(_shooter).TryGetComponent(out PrecisionModeComponent precisionMode);
+            bool precision_mode = precisionMode._precision_mode;
+
+
+            if (entity.TryGetComponent(out IPhysicsComponent physics) && physics.Hard == false)
             {
                 _deleteOnCollide = false;
                 return;
             }
-            else
+
+            if ((physics.CollisionLayer & (int) CollisionGroup.Impassable) != 0)
             {
                 _deleteOnCollide = true;
+            }else if ((physics.CollisionLayer & (int)CollisionGroup.MobImpassable) != 0)
+            {
+                if (entity.TryGetComponent(out IDamageableComponent damageable) && damageable.CurrentState == DamageState.Alive)
+                {
+                    _deleteOnCollide = true;
+                }else if (precision_mode && EntitySystem.Get<GridTileLookupSystem>().GetEntitiesIntersecting(entity.Transform.GridID, new Vector2i((int) Math.Floor(targetPos.X), (int) Math.Floor(targetPos.Y))).Contains(entity))
+                {
+                    _deleteOnCollide = true;
+                }else
+                {
+                    _deleteOnCollide = false;
+                    return;
+                }
+            }
+            else if (EntitySystem.Get<GridTileLookupSystem>().GetEntitiesIntersecting(entity.Transform.GridID, new Vector2i((int)Math.Floor(targetPos.X), (int)Math.Floor(targetPos.Y))).Contains(entity) && precision_mode && (physics.CollisionLayer & (int) CollisionGroup.VaultImpassable | (int) CollisionGroup.SmallImpassable) != 0)
+            {
+                _deleteOnCollide = true;
+            }else
+            {
+                _deleteOnCollide = false;
+                return;
             }
 
             if (_soundHitSpecies != null && entity.HasComponent<IDamageableComponent>())
@@ -119,5 +155,6 @@ namespace Content.Server.GameObjects.Components.Projectiles
         {
             return new ProjectileComponentState(NetID!.Value, _shooter, IgnoreShooter);
         }
+
     }
 }

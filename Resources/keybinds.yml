@@ -301,3 +301,6 @@ binds:
 - function: Arcade3
   type: State
   key: Z
+- function: TogglePrecision
+  type: State
+  key: Alt
