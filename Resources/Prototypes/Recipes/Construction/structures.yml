@@ -180,9 +180,9 @@
   startNode: start
   targetNode: apc
   category: Structures
-  description: Area Power Controller (APC). Controls power, In an area.
+  description: Area Power Controller (APC). Controls power. In an area.
   icon:
     sprite: Constructible/Power/apc.rsi
     state: apc0
   objectType: Structure
-  placementMode: SnapgridCenter
+  placementMode: AlignWallProper
