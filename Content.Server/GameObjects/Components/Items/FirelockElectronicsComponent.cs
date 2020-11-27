@@ -4,7 +4,7 @@
 namespace Content.Server.GameObjects.Components.Items
 {
     [RegisterComponent]
-    class FirelockElectronicsComponent : Component 
+    class FirelockElectronics : Component 
     {
         public override string Name => "FirelockElectronics";
     }
